@@ -32,7 +32,7 @@ from scipy import stats
 pd.set_option('display.max_rows', 500)
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
-def get_vasari_features(file,atlases='/home/jruffle/OneDrive/PhD/VASARI/code/vasari-auto/atlas_masks/',verbose=False,enhancing_label=3,nonenhancing_label=1,oedema_label=2,z_dim=-1,cf=1,t_ependymal=5000,t_wm=150,resolution=1,midline_thresh=5,enh_quality_thresh=15,cyst_thresh=50,cortical_thresh=3000,focus_thresh=30000,num_components_bin_thresh=10,num_components_cet_thresh=10):
+def get_vasari_features(file,atlases='/home/jruffle/OneDrive/PhD/VASARI/code/vasari-auto/atlas_masks/',verbose=False,enhancing_label=3,nonenhancing_label=1,oedema_label=2,z_dim=-1,cf=1,t_ependymal=5000,t_wm=100,resolution=1,midline_thresh=5,enh_quality_thresh=15,cyst_thresh=50,cortical_thresh=1000,focus_thresh=30000,num_components_bin_thresh=10,num_components_cet_thresh=15):
     """
     #Required argument
     file - NIFTI segmentation file with binary lesion labels
@@ -44,17 +44,17 @@ def get_vasari_features(file,atlases='/home/jruffle/OneDrive/PhD/VASARI/code/vas
     nonenhancing_label - the integer value of nonenhancing tumour within file, default=1
     oeedema_label - the integer value of nonenhancing tumour within file, default=2
     z_dim - the dimension of the Z axis within file, default=-1, which assumes MNI template registration
-    cf - correction factor for ambiguity in voxel quantification, default=0
-    t_ependymal - threshold for lesion involvement within the ependyma, this can be customised depending on the voxel resolution you are operating in, default=7500
-    t_wm - threshold for lesion involvement within the wm, this can be customised depending on the voxel resolution you are operating in, default=1
+    cf - correction factor for ambiguity in voxel quantification, default=1
+    t_ependymal - threshold for lesion involvement within the ependyma, this can be customised depending on the voxel resolution you are operating in, default=5000
+    t_wm - threshold for lesion involvement within the wm, this can be customised depending on the voxel resolution you are operating in, default=100
     resolution - volumetric voxel resolution, this is important for derivation of F11 - thickness of enhancing margin, default=1 (1mm x 1mm x 1mm resolution)
-    midline_thresh - threshold for number of diseased voxels that can cross the midline to be quantified as a lesion definitively crossing the midline
-    enh_quality_thresh - threshold for determining the quality of lesion enhancement by volume approximation. Please note ideally this feature would utilise source imaging but in its prototype format uses anonymised segmentation data only
-    cyst_thresh - threshold for determining the presence of cysts based on a heuristic of nCET detection, default=10
+    midline_thresh - threshold for number of diseased voxels that can cross the midline to be quantified as a lesion definitively crossing the midline, default=5
+    enh_quality_thresh - threshold for determining the quality of lesion enhancement by volume approximation. Please note ideally this feature would utilise source imaging but in its prototype format uses anonymised segmentation data only, default=15
+    cyst_thresh - threshold for determining the presence of cysts based on a heuristic of nCET detection, default=50
     cortical_thresh - threshold for determining cortex involvement, default=1000
-    focus_thresh - threshold for determining a side of involvement, this will vary depending on resolution, default=30000
+    focus_thresh - threshold for determining a principle side of involvement, this will vary depending on resolution, default=30000
     num_components_bin_thresh - threshold for quantifying a multifocal lesion, default = 10
-    num_components_cet_thresh - threshold for satellite lesions, default=50
+    num_components_cet_thresh - threshold for satellite lesions, default=15
     """
     
     start_time = time.time()
