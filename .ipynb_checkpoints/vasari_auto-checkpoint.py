@@ -1,17 +1,10 @@
 # This is the codebase for VASARI-auto
-
 ###	vasari-auto.py | a pipeline for automated VASARI characterisation of glioma.
-
 ###	Copyright 2024 James Ruffle, High-Dimensional Neurology, UCL Queen Square Institute of Neurology.
-
 ###	This program is licensed under the APACHE 2.0 license.
-
 ###	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
 ###	See the License for more details.
-
 ###	This code is part of the repository https://github.com/james-ruffle/vasari-auto
-
 ###	Correspondence to Dr James K Ruffle by email: j.ruffle@ucl.ac.uk
 
 #Import packages
@@ -38,10 +31,11 @@ from scipy import stats
 pd.set_option('display.max_rows', 500)
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
-def get_vasari_features(file,verbose=False,enhancing_label=3,nonenhancing_label=1,oedema_label=2,z_dim=-1,cf=1,t_ependymal=7500,t_wm=1,resolution=1,midline_thresh=5,enh_quality_thresh=15,cyst_thresh=50,cortical_thresh=1000,focus_thresh=30000,num_components_bin_thresh=10):
+def get_vasari_features(file,atlases='/home/jruffle/OneDrive/PhD/VASARI/code/vasari-auto/atlas_masks/',verbose=False,enhancing_label=3,nonenhancing_label=1,oedema_label=2,z_dim=-1,cf=1,t_ependymal=7500,t_wm=100,resolution=1,midline_thresh=5,enh_quality_thresh=15,cyst_thresh=50,cortical_thresh=5000,focus_thresh=30000,num_components_bin_thresh=10,num_components_cet_thresh=50):
     """
     #Required argument
     file - NIFTI segmentation file with binary lesion labels
+    atlases - atlas path for location derivation
     
     #Optional hyperparmeters
     verbose - whether to enable verbose logging, default=False
@@ -59,15 +53,72 @@ def get_vasari_features(file,verbose=False,enhancing_label=3,nonenhancing_label=
     cortical_thresh - threshold for determining cortex involvement, default=1000
     focus_thresh - threshold for determining a side of involvement, this will vary depending on resolution, default=30000
     num_components_bin_thresh - threshold for quantifying a multifocal lesion, default = 10
+    num_components_cet_thresh - threshold for satellite lesions, default=50
     """
     
     start_time = time.time()
     
     if verbose:
-        print('Please note that this software is in beta and utilises only irrevocably anonymised lesion masks.\nVASARI features that require source data shall not be derived and return NaN')
+        print('Please note that this software is in beta and utilises only irrevocably anonymised lesion masks.\nVASARI features that require source data shall not be derived and return NaN in this software version')
         print('')
         print('Working on: '+str(file))
         print('')
+
+    ##derive anatomy masks - this is for automated location (F1)
+    brainstem = atlases+'brainstem.nii.gz'
+    brainstem = nib.load(brainstem)
+    brainstem_array = np.asanyarray(brainstem.dataobj)
+    brainstem_vol = np.sum(brainstem_array)
+    
+    frontal_lobe = atlases+'frontal_lobe.nii.gz'
+    frontal_lobe = nib.load(frontal_lobe)
+    frontal_lobe_array = np.asanyarray(frontal_lobe.dataobj)
+    frontal_lobe_vol = np.sum(frontal_lobe_array)
+    
+    insula = atlases+'insula.nii.gz'
+    insula = nib.load(insula)
+    insula_array = np.asanyarray(insula.dataobj)
+    insula_vol = np.sum(insula_array)
+    
+    occipital = atlases+'occipital.nii.gz'
+    occipital = nib.load(occipital)
+    occipital_array = np.asanyarray(occipital.dataobj)
+    occipital_vol = np.sum(occipital_array)
+    
+    parietal = atlases+'parietal.nii.gz'
+    parietal = nib.load(parietal)
+    parietal_array = np.asanyarray(parietal.dataobj)
+    parietal_vol = np.sum(parietal_array)
+    
+    temporal = atlases+'temporal.nii.gz'
+    temporal = nib.load(temporal)
+    temporal_array = np.asanyarray(temporal.dataobj)
+    temporal_vol = np.sum(temporal_array)
+    
+    thalamus = atlases+'thalamus.nii.gz'
+    thalamus = nib.load(thalamus)
+    thalamus_array = np.asanyarray(thalamus.dataobj)
+    thalamus_vol = np.sum(thalamus_array)
+    
+    corpus_callosum = atlases+'corpus_callosum.nii.gz'
+    corpus_callosum = nib.load(corpus_callosum)
+    corpus_callosum_array = np.asanyarray(corpus_callosum.dataobj)
+    corpus_callosum_vol = np.sum(corpus_callosum_array)
+    
+    ventricles = atlases+'ventricles.nii.gz'
+    ventricles = nib.load(ventricles)
+    ventricles_array = np.asanyarray(ventricles.dataobj)
+    ventricles_vol = np.sum(ventricles_array)
+    
+    internal_capsule = atlases+'internal_capsule.nii.gz'
+    internal_capsule = nib.load(internal_capsule)
+    internal_capsule_array = np.asanyarray(internal_capsule.dataobj)
+    internal_capsule_vol = np.sum(internal_capsule_array)
+    
+    cortex = atlases+'cortex.nii.gz'
+    cortex = nib.load(cortex)
+    cortex_array = np.asanyarray(cortex.dataobj)
+    cortex_vol = np.sum(cortex_array)
     
     segmentation = nib.load(file)
     segmentation_array = np.asanyarray(segmentation.dataobj)
@@ -95,9 +146,9 @@ def get_vasari_features(file,verbose=False,enhancing_label=3,nonenhancing_label=
         side='Left'
     if right_hemisphere>focus_thresh and left_hemisphere>focus_thresh:
         side='Bilateral'
-    if verbose:
-        print(right_hemisphere)
-        print(left_hemisphere)
+    # if verbose:
+        # print(right_hemisphere)
+        # print(left_hemisphere)
 
     if verbose:
         print('Determining proportions')
@@ -169,12 +220,15 @@ def get_vasari_features(file,verbose=False,enhancing_label=3,nonenhancing_label=
         
     if verbose:
         print('Determining cortical involvement')
+
     cortical_lesioned_voxels = len((segmentation_array*cortex_array).nonzero()[0])
     cortical_lesioned_voxels_f = np.nan
     if cortical_lesioned_voxels>cortical_thresh:
         cortical_lesioned_voxels_f=2
     if cortical_lesioned_voxels<=cortical_thresh:
         cortical_lesioned_voxels_f=1
+    if verbose:
+        print('Cortically lesioned voxels '+str(cortical_lesioned_voxels))
 
     if verbose:
         print('Determining midline involvement')
@@ -212,9 +266,9 @@ def get_vasari_features(file,verbose=False,enhancing_label=3,nonenhancing_label=
         print('Deriving enhancing satellites')
     labeled_array, num_components_cet = label(CET)
     num_components_cet_f = np.nan
-    if num_components_cet>0:
+    if num_components_cet>num_components_cet_thresh:
         num_components_cet_f =2
-    if num_components_cet==0:
+    else:
         num_components_cet_f=1
     
     if verbose:
@@ -226,7 +280,7 @@ def get_vasari_features(file,verbose=False,enhancing_label=3,nonenhancing_label=
         num_components_ncet_f=2
         
     if verbose:
-        print('cysts '+str(num_components_ncet))
+        print('Cyst count '+str(num_components_ncet))
         
     if verbose:
         print('Deriving enhancement thickness')
@@ -237,7 +291,7 @@ def get_vasari_features(file,verbose=False,enhancing_label=3,nonenhancing_label=
     skeletonpixels = np.count_nonzero(enhancing_skeleton)
     
     if allpixels>0:
-        enhancing_thickness = allpixels/skeletonpixels
+        enhancing_thickness = allpixels/(skeletonpixels+1e-9)
     if allpixels==0:
         enhancing_thickness=0
     enhancing_thickness_f = np.nan
@@ -250,7 +304,7 @@ def get_vasari_features(file,verbose=False,enhancing_label=3,nonenhancing_label=
         enhancing_thickness_f=5
         
     if verbose:
-        print('enhancing thickness '+str(enhancing_thickness))
+        print('Enhancing thickness: '+str(enhancing_thickness))
     
     if verbose:
         print('Converting raw values to VASARI dictionary features')
@@ -298,23 +352,26 @@ def get_vasari_features(file,verbose=False,enhancing_label=3,nonenhancing_label=
     if num_components_bin>num_components_bin_thresh:
         f9_multifocal=2
     if verbose:
-        print('num_components_bin: '+str(num_components_bin))
+        print('Number of lesion components: '+str(num_components_bin))
         
     proportion_oedema_f=np.nan
+    if verbose:
+        print('prop oedema '+str(proportion_oedema))
+    
     if proportion_oedema==0:
         proportion_oedema_f=2
     if 0<proportion_oedema<=5:
         proportion_oedema_f=3
     if 5<proportion_oedema<=33:
         proportion_oedema_f=4
-    if 33<proportion_oedema<=67:
+    if 33<proportion_oedema:
         proportion_oedema_f=5
     
         
     end_time = time.time()
-    if verbose:
-        print(f"Time taken for data {i}: {end_time - start_time} seconds")
     time_taken = (end_time - start_time)
+    if verbose:
+        print("Time taken: "+ str(time_taken)+" seconds")
         
     if verbose:
         print('')
@@ -342,12 +399,12 @@ def get_vasari_features(file,verbose=False,enhancing_label=3,nonenhancing_label=
                               'time_taken_seconds':time_taken,
                               'F1 Tumour Location':F1_dict[vols.iloc[0,0]], #vols.iloc[0,0],
                               'F2 Side of Tumour Epicenter':F2_dict[side],
-                              'F3 Eloquent Brain':np.nan, #to codify with eloquency mask
+                              'F3 Eloquent Brain':np.nan, #unsupported in current version
                               'F4 Enhancement Quality':enhancement_quality,
                               'F5 Proportion Enhancing':proportion_enhancing_f,
                               'F6 Proportion nCET':proportion_nonenhancing_f,
                               'F7 Proportion Necrosis':proportion_necrosis_f,
-                              'F8 Cyst(s)':num_components_ncet_f, #unsupported in current version
+                              'F8 Cyst(s)':num_components_ncet_f,
                                 'F9 Multifocal or Multicentric':f9_multifocal,
                                'F10 T1/FLAIR Ratio':np.nan,  #unsupported in current version
                                'F11 Thickness of enhancing margin':enhancing_thickness_f,
