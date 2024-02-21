@@ -3,6 +3,7 @@
 ###	Copyright 2024 James Ruffle, High-Dimensional Neurology, UCL Queen Square Institute of Neurology.
 ###	This program is licensed under the APACHE 2.0 license.
 ###	This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+### This program is not intended for clinical use of any kind.
 ###	See the License for more details.
 ###	This code is part of the repository https://github.com/james-ruffle/vasari-auto
 ###	Correspondence to Dr James K Ruffle by email: j.ruffle@ucl.ac.uk
@@ -31,7 +32,7 @@ from scipy import stats
 pd.set_option('display.max_rows', 500)
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
-def get_vasari_features(file,atlases='/home/jruffle/OneDrive/PhD/VASARI/code/vasari-auto/atlas_masks/',verbose=False,enhancing_label=3,nonenhancing_label=1,oedema_label=2,z_dim=-1,cf=1,t_ependymal=7500,t_wm=100,resolution=1,midline_thresh=5,enh_quality_thresh=15,cyst_thresh=50,cortical_thresh=5000,focus_thresh=30000,num_components_bin_thresh=10,num_components_cet_thresh=50):
+def get_vasari_features(file,atlases='/home/jruffle/OneDrive/PhD/VASARI/code/vasari-auto/atlas_masks/',verbose=False,enhancing_label=3,nonenhancing_label=1,oedema_label=2,z_dim=-1,cf=1,t_ependymal=5000,t_wm=150,resolution=1,midline_thresh=5,enh_quality_thresh=15,cyst_thresh=50,cortical_thresh=3000,focus_thresh=30000,num_components_bin_thresh=10,num_components_cet_thresh=10):
     """
     #Required argument
     file - NIFTI segmentation file with binary lesion labels
