@@ -405,7 +405,7 @@ def get_vasari_features(file,atlases='/home/jruffle/OneDrive/PhD/VASARI/code/vas
                               'F5 Proportion Enhancing':proportion_enhancing_f,
                               'F6 Proportion nCET':proportion_nonenhancing_f,
                               'F7 Proportion Necrosis':proportion_necrosis_f,
-                              'F8 Cyst(s)':num_components_ncet_f,
+                              'F8 Cyst(s)':np.nan, #unsupported in current version num_components_ncet_f,
                                 'F9 Multifocal or Multicentric':f9_multifocal,
                                'F10 T1/FLAIR Ratio':np.nan,  #unsupported in current version
                                'F11 Thickness of enhancing margin':enhancing_thickness_f,
