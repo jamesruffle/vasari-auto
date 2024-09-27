@@ -32,7 +32,7 @@ from scipy import stats
 pd.set_option('display.max_rows', 500)
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
-def get_vasari_features(file,atlases='/home/jruffle/OneDrive/PhD/VASARI/code/vasari-auto/atlas_masks/',verbose=False,enhancing_label=3,nonenhancing_label=1,oedema_label=2,z_dim=-1,cf=1,t_ependymal=5000,t_wm=100,resolution=1,midline_thresh=5,enh_quality_thresh=15,cyst_thresh=50,cortical_thresh=1000,focus_thresh=30000,num_components_bin_thresh=10,num_components_cet_thresh=15):
+def get_vasari_features(file,atlases='/atlas_masks/',verbose=False,enhancing_label=3,nonenhancing_label=1,oedema_label=2,z_dim=-1,cf=1,t_ependymal=5000,t_wm=100,resolution=1,midline_thresh=5,enh_quality_thresh=15,cyst_thresh=50,cortical_thresh=1000,focus_thresh=30000,num_components_bin_thresh=10,num_components_cet_thresh=15):
     """
     #Required argument
     file - NIFTI segmentation file with binary lesion labels
@@ -182,9 +182,7 @@ def get_vasari_features(file,atlases='/home/jruffle/OneDrive/PhD/VASARI/code/vas
         print(vols)
     
     proportion_enhancing = (enhancing_voxels/total_lesion_burden)*100
-#     proportion_enhancing = (enhancing_voxels/(enhancing_voxels+nonenhancing_voxels+.1))*100
     proportion_nonenhancing = (nonenhancing_voxels/total_lesion_burden)*100
-#     proportion_nonenhancing = (nonenhancing_voxels/(enhancing_voxels+nonenhancing_voxels+.1))*100
     proportion_oedema = (oedema_voxels/total_lesion_burden+.1)*100
     
     enhancement_quality = 1
@@ -274,7 +272,6 @@ def get_vasari_features(file,atlases='/home/jruffle/OneDrive/PhD/VASARI/code/vas
     
     if verbose:
         print('Deriving cysts')
-    #heuristic to approximate cyst formation by multifocal nonenhancing components
     labeled_array, num_components_ncet = label(nCET)
     num_components_ncet_f =1
     if num_components_ncet>cyst_thresh:
