@@ -18,7 +18,7 @@ This is the codebase for automated VASARI characterisation of glioma, as detaile
 ## What is this repository for?
 The [VASARI MRI feature set](https://wiki.cancerimagingarchive.net/display/Public/VASARI+Research+Project) is a quantitative system designed to standardise glioma imaging descriptions. 
 
-*Though effective, deriving VASARI is time-consuming to derive manually.*
+Though effective, deriving VASARI is time-consuming to derive manually.
 
 To resolve this, **we release VASARI-auto, an automated labelling software applied to open-source lesion masks.**
 
