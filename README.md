@@ -1,5 +1,5 @@
 # VASARI-auto
-This is a codebase for automated VASARI characterisation of glioma, as detailed in the [article](https://doi.org/10.1016/j.nicl.2024.103668).
+This is the codebase for automated VASARI characterisation of glioma, as detailed in our [article](https://doi.org/10.1016/j.nicl.2024.103668).
 
 ![Overview](assets/overview.png)
 
@@ -16,9 +16,11 @@ This is a codebase for automated VASARI characterisation of glioma, as detailed 
 - [Funding](#funding)
 
 ## What is this repository for?
-The VASARI MRI feature set is a quantitative system designed to standardise glioma imaging descriptions. Though effective, deriving VASARI is time-consuming to derive manually.
+The [VASARI MRI feature set](https://wiki.cancerimagingarchive.net/display/Public/VASARI+Research+Project) is a quantitative system designed to standardise glioma imaging descriptions. 
 
-To resolve this, we release VASARI-auto, an automated labelling software applied to open-source lesion masks.
+*Though effective, deriving VASARI is time-consuming to derive manually.*
+
+To resolve this, **we release VASARI-auto, an automated labelling software applied to open-source lesion masks.**
 
 VASARI-auto is a **highly efficient** and **equitable** *automated labelling system*, a **favourable economic profile** if used as a decision support tool, and offers **non-inferior survival prediction**. 
 
@@ -32,7 +34,7 @@ For segmentation files, this code assumes that lesion components are labelled wi
 - Nonenhancing tumour = 1
 ```
 
-We include a [Jupyter Notebook tutorial](demo.ipynb) that calls upon the [source code](vasari_auto.py).
+See the [Jupyter Notebook tutorial](demo.ipynb) that calls upon the [source code](vasari_auto.py).
 
 ## Advantages
 ### Stable
